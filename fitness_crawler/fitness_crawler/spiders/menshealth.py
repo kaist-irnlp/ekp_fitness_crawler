@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from urlparse import urljoin
+from fitness_crawler.items import MensHealthItem
+from w3lib.html import remove_tags
 
 class MenshealthSpider(scrapy.Spider):
     name = "menshealth"
@@ -49,3 +51,12 @@ class MenshealthSpider(scrapy.Spider):
     
     def parse_article(self, response):
         self.logger.info(response.url)
+
+        # item
+        item = MensHealthItem()
+        item['title'] = response.xpath('//*[@class="dtitle"]/text()').extract_first()
+        item['subtitle'] = response.xpath('//*[@class="sktitle"]/text()').extract_first()
+        item['lead'] = response.xpath('//*[@class="hplead"]/text()').extract_first()
+        item['content'] = "\n".join([remove_tags(text.strip()) for text 
+                                        in response.xpath('//*[@class="hpcontents"]//text()').extract()])
+        yield item

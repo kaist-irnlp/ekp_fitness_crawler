@@ -8,7 +8,10 @@
 import scrapy
 
 
-class FitnessCrawlerItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class MensHealthItem(scrapy.Item):
+    """맨즈헬스 Item
+    """
+    title = scrapy.Field()
+    subtitle = scrapy.Field()
+    lead = scrapy.Field()
+    content = scrapy.Field()
