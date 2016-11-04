@@ -1,0 +1,15 @@
+crawler:
+    build: .
+arango:
+    image: arangodb:3.0
+    ports: 
+        - '18529:8529'
+    volumes_from: 
+        - arango_data
+    environment: 
+        - ARANGO_ROOT_PASSWORD=ir7753nlp!
+arango_data:
+    image: ubuntu:xenial
+    volumes: 
+        - /var/lib/arangodb3
+        - /var/lib/arangodb3-apps
