@@ -11,7 +11,9 @@ import scrapy
 class MensHealthItem(scrapy.Item):
     """맨즈헬스 Item
     """
+    uid = scrapy.Field()
     title = scrapy.Field()
     subtitle = scrapy.Field()
     lead = scrapy.Field()
     content = scrapy.Field()
+    url = scrapy.Field()
