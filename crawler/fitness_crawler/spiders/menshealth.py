@@ -25,7 +25,7 @@ class MenshealthSpider(scrapy.Spider):
 
             [흐름]
             1. 게시판 페이지에서 글 링크 추출
-            2. 추출된 각각의 글 링크를 타고 들어가서 텍스트 추출 - 비동기 처리 (parse_article)
+            2. 추출된 각각의 글 링크를 타고 들어가서 텍스트 추출 (parse_article) - 병렬적으로 처리
             3. 다음 페이지로 넘어가서 글 링크 추출 (so on)
         """
         start_url = self.get_list_url(page=self.page)
