@@ -31,14 +31,14 @@ class MenshealthSpider(scrapy.Spider):
         start_url = self.get_list_url(page=self.page)
         return [scrapy.Request(url=start_url, callback=self.parse_list)]
 
-    def stop(self, reason=""):
+    def stop(self, item, reason=""):
         """크롤링 중지"""
         raise CloseSpider(reason)
 
     def parse_list(self, response):
         """1) 게시판 페이지에서 글 링크 추출 후, 2) 각 글 링크에서 텍스트 추출 요청 (parse_article)
 
-        Argument:
+        Args:
             response (scrapy.Response)
         """
         _page = self.get_page_from_url(response.url)
@@ -59,31 +59,56 @@ class MenshealthSpider(scrapy.Spider):
         next_url = self.get_list_url(page=self.page)
         yield scrapy.Request(url=next_url, callback=self.parse_list, dont_filter=True)
 
-    def get_info_id_from_url(self, url):
+    def get_url_query_value(self, url, query):
+        """URL query의 특정 키의 value를 반환
+
+        Args:
+            url (str): URL
+            query (str): specific key of query
+
+        Returns:
+            value (obj): value of given query key, None if not exists
+        """
+        try:
+            query_string = urlparse(url).query
+            query_value = parse_qs(query_string)[query]
+            if len(query_value) == 1:
+                query_value = query_value[0]
+        except IndexError:
+            query_value = None
+        except ValueError:
+            query_value = None
+        except KeyError:
+            self.logger.warning('{} not found in given url'.format(query))
+            query_value = None
+        return query_value
+
+    def get_board_id_from_url(self, url):
+        """게시판을 나타내는 c_id를 글 URL에서 추출
+
+        Args:
+            url (str): 글 URL
+
+        Returns:
+            c_id (int): c_id if exists in the url otherwise 0
+        """
+        return self.get_url_query_value(url=url, query='c_id')
+
+    def get_article_id_from_url(self, url):
         """uid로 쓸 info_id를 글 URL에서 추출
 
-        Argument:
+        Args:
             url (str): 글 URL
 
         Returns:
             info_id (int): info_id if exists in the url otherwise 0
         """
-        try:
-            query_string = urlparse(url).query
-            info_id = parse_qs(query_string)['info_id'][0]
-        except IndexError:
-            info_id = 0
-        except ValueError:
-            info_id = 0
-        except KeyError:
-            self.logger.warning('info_id not found in url')
-            info_id = 0
-        return info_id
+        return self.get_url_query_value(url=url, query='info_id')
 
     def get_page_from_url(self, url):
         """URL에서 현재 페이지 추출
 
-        Argument:
+        Args:
             url (str): 페이지 URL
 
         Returns:
@@ -109,7 +134,7 @@ class MenshealthSpider(scrapy.Spider):
 
         # item
         item = MensHealthItem()
-        item['uid'] = self.get_info_id_from_url(url)
+        item['uid'] = self.get_article_id_from_url(url)
         item['title'] = response.xpath('//*[@class="dtitle"]/text()').extract_first()
         item['subtitle'] = response.xpath('//*[@class="sktitle"]/text()').extract_first()
         item['lead'] = response.xpath('//*[@class="hplead"]/text()').extract_first()
@@ -120,7 +145,7 @@ class MenshealthSpider(scrapy.Spider):
     def get_list_url(self, page):
         """넘겨진 페이지에 해당되는 게시판 페이지 링크 반환
 
-        Argument:
+        Args:
             page (int): 게시판 페이지
 
         Returns:

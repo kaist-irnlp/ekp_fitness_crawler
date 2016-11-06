@@ -77,6 +77,6 @@ class ArangoPipeline(object):
         try:
             doc.save()
         except CreationError:
-            spider.stop(reason='duplicate')
+            spider.stop(item=item, reason='duplicate')
 
         return item
