@@ -71,7 +71,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'fitness_crawler.pipelines.CleanTextPipeline': 100,
+    'fitness_crawler.pipelines.CleanTextPipeline': 100,
+    'fitness_crawler.pipelines.ArangoPipeline': 200,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

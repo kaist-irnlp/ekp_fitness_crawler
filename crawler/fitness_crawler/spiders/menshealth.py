@@ -33,7 +33,7 @@ class MenshealthSpider(scrapy.Spider):
 
     def stop(self, reason=""):
         """크롤링 중지"""
-        raise CloseSpider(reason=reason)
+        raise CloseSpider(reason)
 
     def parse_list(self, response):
         """1) 게시판 페이지에서 글 링크 추출 후, 2) 각 글 링크에서 텍스트 추출 요청 (parse_article)

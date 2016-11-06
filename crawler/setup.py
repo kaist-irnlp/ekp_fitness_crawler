@@ -21,6 +21,8 @@ setup(
     author_email='kyoungrok.jang@gmail.com',
     install_requires=[
         'scrapy',
+        'pyarango',
+        'click'
     ],
     entry_points='''
         [console_scripts]
