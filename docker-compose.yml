@@ -1,5 +1,7 @@
 crawler:
     build: .
+    links: 
+        - arango
 arango:
     image: arangodb:3.0
     ports: 

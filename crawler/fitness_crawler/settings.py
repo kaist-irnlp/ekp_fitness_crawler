@@ -18,7 +18,7 @@ NEWSPIDER_MODULE = 'fitness_crawler.spiders'
 LOG_LEVEL = 'INFO'
 
 # Feed
-FEED_FORMAT = 'xml'
+FEED_FORMAT = 'csv'
 FEED_URI = './feed/%(name)s_%(time)s' 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -70,9 +70,10 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'fitness_crawler.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'fitness_crawler.pipelines.CleanTextPipeline': 100,
+    'fitness_crawler.pipelines.ArangoPipeline': 200,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
