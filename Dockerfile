@@ -5,7 +5,7 @@ RUN wget http://www.arangodb.com/repositories/arangodb31/Debian_8.0/Release.key 
     apt-key add - < Release.key && \
     echo 'deb http://www.arangodb.com/repositories/arangodb31/Debian_8.0/ /' | tee /etc/apt/sources.list.d/arangodb.list && \
     apt-get update && \
-    apt-get install arangodb3-client=3.1.0 \
+    apt-get install -y arangodb3-client=3.1.0 \
     supervisor \
     cron && \
     apt-get autoremove -y && \
