@@ -38,7 +38,8 @@ class CleanTextPipeline(object):
 class ArangoPipeline(object):
     """ArangoDB에 데이터 저정하는 파이프라인
     """
-    ARANGO_URL = os.environ.get('arango') or 'http://localhost:8529'
+    ARANGO_URL = '{}:8529'.format(os.environ.get('arango') or 'http://localhost')
+    # ARANGO_URL = os.environ.get('arango')+':8529' or 'http://localhost:8529'
     ARANGO_DB = 'fitness'
 
     def __init__(self):

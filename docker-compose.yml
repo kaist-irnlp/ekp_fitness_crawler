@@ -3,7 +3,7 @@ crawler:
     links: 
         - arango
 arango:
-    image: arangodb:3.0
+    image: arangodb:latest
     ports: 
         - '18529:8529'
     volumes_from: 
