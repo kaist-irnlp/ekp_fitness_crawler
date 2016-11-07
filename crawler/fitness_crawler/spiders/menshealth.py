@@ -6,9 +6,11 @@ from urlparse import urljoin
 from fitness_crawler.items import MensHealthItem
 from w3lib.html import remove_tags
 from scrapy.exceptions import CloseSpider
+from collections import defaultdict
 
 
 class MenshealthSpider(scrapy.Spider):
+    """MenshealthSpider class"""
     name = "menshealth"
     allowed_domains = ["menshealth.designhouse.co.kr"]
 
@@ -17,6 +19,8 @@ class MenshealthSpider(scrapy.Spider):
 
     page = 1
     """작업중인 게시판 페이지 번호를 나타냄"""
+
+    board_stop_uid = defaultdict(None)
 
     def start_requests(self):
         """최초 크롤링 요청을 시작하는 곳
@@ -31,9 +35,28 @@ class MenshealthSpider(scrapy.Spider):
         start_url = self.get_list_url(page=self.page)
         return [scrapy.Request(url=start_url, callback=self.parse_list)]
 
-    def stop(self, item, reason=""):
+    def stop(self, item=None, reason=""):
         """크롤링 중지"""
-        raise CloseSpider(reason)
+        self.logger.warning('Stopping crawler: %s', reason)
+
+        if item:
+            board_id = self.get_board_id_from_url(item['url'])
+            self.board_stop_uid[board_id] = item['uid']
+
+    def parse_article(self, response):
+        """게시판 글 파싱"""
+        url = response.url
+        self.logger.info(url)
+
+        # item
+        item = MensHealthItem()
+        item['uid'] = self.get_article_id_from_url(url)
+        item['title'] = response.xpath('//*[@class="dtitle"]/text()').extract_first()
+        item['subtitle'] = response.xpath('//*[@class="sktitle"]/text()').extract_first()
+        item['lead'] = response.xpath('//*[@class="hplead"]/text()').extract_first()
+        item['content'] = " ".join([text.strip() for text in response.xpath('//*[@class="hpcontents"]//text()').extract()])
+        item['url'] = url
+        yield item
 
     def parse_list(self, response):
         """1) 게시판 페이지에서 글 링크 추출 후, 2) 각 글 링크에서 텍스트 추출 요청 (parse_article)
@@ -42,6 +65,7 @@ class MenshealthSpider(scrapy.Spider):
             response (scrapy.Response)
         """
         _page = self.get_page_from_url(response.url)
+        board_id = self.get_board_id_from_url(response.url)
         self.logger.info('Processing page %s', _page)
 
         # request each article
@@ -52,12 +76,17 @@ class MenshealthSpider(scrapy.Spider):
         else:
             for u in urls:
                 url = urljoin(self.BASE_URL, u)
-                yield scrapy.Request(url=url, callback=self.parse_article, dont_filter=True)
 
-        # request next page
-        self.page += 1
-        next_url = self.get_list_url(page=self.page)
-        yield scrapy.Request(url=next_url, callback=self.parse_list, dont_filter=True)
+                # 이미 크롤링 된 article이라면 요청을 보내지 않음
+                article_id = self.get_article_id_from_url(url)
+                if article_id > self.board_stop_uid.get(board_id):
+                    yield scrapy.Request(url=url, callback=self.parse_article, dont_filter=True)
+
+        # request next page only if stop_uid is None
+        if not self.board_stop_uid.get(board_id):
+            self.page += 1
+            next_url = self.get_list_url(page=self.page)
+            yield scrapy.Request(url=next_url, callback=self.parse_list, dont_filter=True)
 
     def get_url_query_value(self, url, query):
         """URL query의 특정 키의 value를 반환
@@ -125,22 +154,6 @@ class MenshealthSpider(scrapy.Spider):
             self.logger.warning('p_no not found in url')
             page = 0
         return page
-
-    def parse_article(self, response):
-        """게시판 글 파싱
-        """
-        url = response.url
-        self.logger.info(url)
-
-        # item
-        item = MensHealthItem()
-        item['uid'] = self.get_article_id_from_url(url)
-        item['title'] = response.xpath('//*[@class="dtitle"]/text()').extract_first()
-        item['subtitle'] = response.xpath('//*[@class="sktitle"]/text()').extract_first()
-        item['lead'] = response.xpath('//*[@class="hplead"]/text()').extract_first()
-        item['content'] = " ".join([remove_tags(text.strip()) for text in response.xpath('//*[@class="hpcontents"]//text()').extract()])
-        item['url'] = url
-        yield item
 
     def get_list_url(self, page):
         """넘겨진 페이지에 해당되는 게시판 페이지 링크 반환

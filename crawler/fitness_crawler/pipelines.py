@@ -8,6 +8,7 @@ import re
 import os
 from pyArango.connection import Connection
 from pyArango.theExceptions import CreationError
+from scrapy.exceptions import DropItem
 
 
 class CleanTextPipeline(object):
@@ -78,5 +79,6 @@ class ArangoPipeline(object):
             doc.save()
         except CreationError:
             spider.stop(item=item, reason='duplicate')
+            raise DropItem('duplicate')
 
         return item
