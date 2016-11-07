@@ -7,7 +7,7 @@ Fitness 관련 리소스 크롤러
 - [ ] 네이버 체육학 사전 ([Link](http://terms.naver.com/list.nhn?cid=42877&categoryId=42877))
 
 ## Target (medium confidence)
-- [ ] Men's Health ([Link](http://menshealth.designhouse.co.kr))
+- [X] Men's Health ([Link](http://menshealth.designhouse.co.kr))
 - [ ] 헬스뉴스 ([Link](http://www.dietdaily.co.kr))
 - [ ] 헬스조선 ([Link](http://health.chosun.com/diet))
 - [ ] 월드짐 피트니스 ([Link](http://www.asiaworldgym.com))
