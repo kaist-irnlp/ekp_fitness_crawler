@@ -1,7 +1,7 @@
-# create `fitness` db
-arangosh \
-    --server.username root \
-    --server.database _system \
-    --javascript.execute-string db._createDatabase("fitness");
+#!/bin/bash
+
+#!/bin/bash
+bash /wait-for-it.sh arango:8529
+sleep 5
 
 cd /crawler && scrapy crawl menshealth

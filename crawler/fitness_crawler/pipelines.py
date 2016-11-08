@@ -38,13 +38,30 @@ class CleanTextPipeline(object):
 class ArangoPipeline(object):
     """ArangoDB에 데이터 저정하는 파이프라인
     """
-    ARANGO_URL = '{}:8529'.format(os.environ.get('arango') or 'http://localhost')
-    # ARANGO_URL = os.environ.get('arango')+':8529' or 'http://localhost:8529'
-    ARANGO_DB = 'fitness'
+    ARANGO_URL = 'http://{}:8529'.format('arango')
+    # ARANGO_URL = 'http://{}:8529'.format('localhost')
+    ARANGO_FITNESS_DB = 'fitness'
 
     def __init__(self):
         self.conn = Connection(arangoURL=self.ARANGO_URL, username='root', password='ir7753nlp!')
-        self.db = self.conn[self.ARANGO_DB]
+        self.db = self.create_or_get_db(self.conn, self.ARANGO_FITNESS_DB)
+
+    def create_or_get_db(self, connection, db_name):
+        """Create or fetch db
+
+        Args:
+            connection (pyArango.connection.connection): connection to DB
+            db_name (str): the name of DB
+
+        Returns:
+            db (pyArango.database.database): the database
+        """
+        try:
+            db = connection.createDatabase(db_name)
+        except CreationError:
+            db = connection[db_name]
+
+        return db
 
     def create_or_get_collection(self, collection_name):
         """ArangoDB Collection 반환 (필요시 생성)

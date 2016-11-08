@@ -14,9 +14,13 @@ RUN wget http://www.arangodb.com/repositories/arangodb31/Debian_8.0/Release.key 
 
 COPY crawler/ /crawler
 COPY run.sh /run.sh
+COPY wait-for-it.sh /wait-for-it.sh
 
 WORKDIR /crawler
 
-RUN chmod -R +x /crawler && pip install -r requirements.txt
+RUN chmod -R +x /crawler && \
+    chmod +x /run.sh && \ 
+    chmod +x /wait-for-it.sh && \ 
+    pip install -r requirements.txt
 
-ENTRYPOINT ["/bin/bash", "/run.sh"]
+CMD ["/run.sh"]
