@@ -1,6 +1,9 @@
 # ekp_fitness_crawler
 Fitness 관련 리소스 크롤러
 
+## TODO
+- [ ] docker-compose `crawler`에 `cron` 설치해서 주기적으로 자동 실행되도록 
+
 ## Target (high confidence)
 - [ ] 네이버 체육학대사전 ([Link](http://terms.naver.com/list.nhn?cid=42876&categoryId=42876))
 - [ ] 두산백과 웨이트트레이닝 ([Link](http://terms.naver.com/entry.nhn?docId=1208680&cid=40942&categoryId=31946))
