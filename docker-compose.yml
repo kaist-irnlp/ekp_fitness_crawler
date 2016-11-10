@@ -8,7 +8,8 @@ services:
             - arango
         depends_on:
             - arango
-        # entrypoint: ./wait-for-it.sh arango:8529
+        environment: 
+            - ARANGO_HOST_PORT="arango:8529"
     arango:
         image: arangodb:latest
         ports: 

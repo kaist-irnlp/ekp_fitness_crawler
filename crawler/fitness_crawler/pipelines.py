@@ -38,13 +38,12 @@ class CleanTextPipeline(object):
 class ArangoPipeline(object):
     """ArangoDB에 데이터 저정하는 파이프라인
     """
-    ARANGO_URL = 'http://{}:8529'.format('arango')
-    # ARANGO_URL = 'http://{}:8529'.format('localhost')
-    ARANGO_FITNESS_DB = 'fitness'
+    ARANGO_URL = os.environ.get('ARANGO_HOST_PORT') or 'http://localhost:18529'
+    ARANGO_DB = 'ekp'
 
     def __init__(self):
         self.conn = Connection(arangoURL=self.ARANGO_URL, username='root', password='ir7753nlp!')
-        self.db = self.create_or_get_db(self.conn, self.ARANGO_FITNESS_DB)
+        self.db = self.create_or_get_db(self.conn, self.ARANGO_DB)
 
     def create_or_get_db(self, connection, db_name):
         """Create or fetch db
@@ -96,7 +95,7 @@ class ArangoPipeline(object):
         try:
             doc.save()
         except CreationError:
-            spider.stop(item=item, reason='duplicate')
+            spider.stop_crawler(item=item, reason='duplicate')
             raise DropItem('duplicate')
 
         return item

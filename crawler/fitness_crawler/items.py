@@ -8,10 +8,16 @@
 import scrapy
 
 
-class MensHealthItem(scrapy.Item):
+class EKPItem(scrapy.Item):
+    uid = scrapy.Field()
+
+
+class MensHealthItem(EKPItem):
     """맨즈헬스 Item
     """
     uid = scrapy.Field()
+    board_id = scrapy.Field()
+    article_id = scrapy.Field()
     title = scrapy.Field()
     subtitle = scrapy.Field()
     lead = scrapy.Field()
