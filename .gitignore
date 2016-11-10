@@ -1,6 +1,7 @@
 # My
 feed/
 .vscode/
+arangodb/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
